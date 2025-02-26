@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.usercenter.usercenterwebjava.mapper")
+@MapperScan("com.usercenter.usercenterwebjava.Mapper")
 public class UserCenterWebJavaApplication {
 
     public static void main(String[] args) {
