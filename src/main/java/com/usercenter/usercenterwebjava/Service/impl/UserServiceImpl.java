@@ -39,7 +39,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return -1;
         }
         //账户不能包含特殊字符
-        String validPattern = "[\\u00A0\\s\\p{Punct}&&[^;]]";
+        String validPattern = "\\u00A0\\s\\p{Punct}&&[^;]";
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if (matcher.find()) {
             return -1;
