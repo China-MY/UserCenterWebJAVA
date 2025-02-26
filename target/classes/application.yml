@@ -16,7 +16,7 @@ server:
 
   servlet:
     context-path: /api
-
+#  驼峰转换
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
