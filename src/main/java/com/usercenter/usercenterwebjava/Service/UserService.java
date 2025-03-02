@@ -2,6 +2,7 @@ package com.usercenter.usercenterwebjava.Service;
 
 import com.usercenter.usercenterwebjava.Model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 * @description 针对表【user(用户表)】的数据库操作Service
 * @createDate 2025-02-26 16:24:42
 */
+@Service
 public interface UserService extends IService<User> {
 
     /**

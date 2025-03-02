@@ -42,27 +42,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     private static final  String USER_LOGIN_STATE = "user_login_state";
 
-    /**
-     *
-     * @param user 脱敏后的user信息
-     * @return 返回脱敏后的信息
-     */
-    @NotNull
-    private static User getSafeUser(User user) {
-        User safeUser = new User();
-        safeUser.setId(user.getId());
-        safeUser.setUsername(user.getUsername());
-        safeUser.setUserAccount(user.getUserAccount());
-        safeUser.setAvatarUrl(user.getAvatarUrl());
-        safeUser.setGender(user.getGender());
-        safeUser.setPhone(user.getPhone());
-        safeUser.setEmail(user.getEmail());
-        safeUser.setUserStatus(user.getUserStatus());
-        safeUser.setCreateTime(user.getCreateTime());
-        safeUser.setUpdateTime(user.getUpdateTime());
-        safeUser.setUserRole(user.getUserRole());
-        return safeUser;
-    }
 
     /**
      *
@@ -155,16 +134,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             log.info("user login fail, userAccount cannot match userPassword");
             return null;
         }
-        //        用户脱敏
-        User safeUser = getSafeUser(user);
+        //  用户脱敏
+        User safeUser = new User();
+        safeUser.setId(user.getId());
+        safeUser.setUsername(user.getUsername());
+        safeUser.setUserAccount(user.getUserAccount());
+        safeUser.setAvatarUrl(user.getAvatarUrl());
+        safeUser.setGender(user.getGender());
+        safeUser.setPhone(user.getPhone());
+        safeUser.setEmail(user.getEmail());
+        safeUser.setUserStatus(user.getUserStatus());
+        safeUser.setCreateTime(user.getCreateTime());
+        safeUser.setUpdateTime(user.getUpdateTime());
+        safeUser.setUserRole(user.getUserRole());
+
         //        记录用户的登录状态
-        request.getSession().setAttribute(USER_LOGIN_STATE, user);
+        request.getSession().setAttribute(USER_LOGIN_STATE, safeUser);
         return safeUser;
     }
-
-
-    测试
-    测试
 }
 
 

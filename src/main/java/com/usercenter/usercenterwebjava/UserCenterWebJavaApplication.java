@@ -11,7 +11,7 @@ public class UserCenterWebJavaApplication {
     public static void main(String[] args) {
 
         SpringApplication.run(UserCenterWebJavaApplication.class, args);
-
+        System.out.println("用户管理中心后端启动成功！！！");
     }
 
 }

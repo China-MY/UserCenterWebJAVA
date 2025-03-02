@@ -12,7 +12,7 @@ spring:
 
 #  端口号
 server:
-  port: 8080
+  port: 8888
 
   servlet:
     context-path: /api
@@ -20,7 +20,7 @@ server:
 #  驼峰转换
 mybatis-plus:
   configuration:
-    map-underscore-to-camel-case: true
+    map-underscore-to-camel-case: false
 #    全局逻辑删除
   global-config:
     db-config:
