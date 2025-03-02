@@ -9,7 +9,8 @@ import lombok.Data;
 
 /**
  * 用户表
- * @TableName user
+ * user
+ * @author 明裕学长
  */
 @TableName(value ="user")
 @Data

@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
-* @author myxz
-* @description 针对表【user(用户表)】的数据库操作Service
-* @createDate 2025-02-26 16:24:42
-*/
+ /**
+ *
+ * User Service
+ *
+ * @author 明裕学长
+ *
+ */
 @Service
 public interface UserService extends IService<User> {
 

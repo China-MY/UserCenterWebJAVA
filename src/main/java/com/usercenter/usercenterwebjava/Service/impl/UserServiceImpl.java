@@ -1,19 +1,14 @@
 package com.usercenter.usercenterwebjava.Service.impl;
-import java.util.Date;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.usercenter.usercenterwebjava.Model.domain.User;
 import com.usercenter.usercenterwebjava.Service.UserService;
 import com.usercenter.usercenterwebjava.Mapper.UserMapper;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,11 +40,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     /**
      *
+     * 用户注册
+     *
      * @param userAccount 用户账户
      * @param userPassword 用户密码
      * @param checkPassword 校验密码
-     *
-     * @return
+     * @return 返回用户注册后的id
      */
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -98,10 +94,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     /**
      *
+     * 用户登录
+     *
      * @param userAccount 用户账户
      * @param userPassword 用户密码
      * @param request 请求
-     * @return
+     * @return 登录后返回用户信息
      */
 
     @Override

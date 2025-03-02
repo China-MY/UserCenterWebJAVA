@@ -2,7 +2,6 @@ package com.usercenter.usercenterwebjava.Model.request;
 
 import lombok.Data;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 
 /**
