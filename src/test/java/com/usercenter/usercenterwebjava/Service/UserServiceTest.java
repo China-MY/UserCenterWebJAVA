@@ -95,4 +95,12 @@ class UserServiceTest {
         result = userService.userRegister(userAccount, userPassword, checkPassword);
         Assertions.assertEquals(-1, result);
     }
+
+//    @Test
+//    public void userLogin() {
+//        String userAccount = "myxzadmin";
+//        String encryptPassword = "12345678";
+//        User user = userService.userLogin(userAccount, encryptPassword);
+//        System.out.println(user);
+//    }
 }
