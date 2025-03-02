@@ -38,16 +38,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (userPassword.length() < 8|| checkPassword.length() < 8) {
             return -1;
         }
+        // 密码和校验密码相同
+        if (!userPassword.equals(checkPassword)) {
+            return -1;
+        }
         //账户不能包含特殊字符
         String validPattern = "\\u00A0\\s\\p{Punct}&&[^;]";
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if (matcher.find()) {
             return -1;
         }
-        // 密码和校验密码相同
-        if (!userPassword.equals(checkPassword)) {
-            return -1;
-        }
+
         //  账户不能重复
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_account", userAccount);
@@ -69,6 +70,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         return user.getId();
     }
+
+    @Override
+    public long userLogin(String userAccount, String userPassword) {
+//        查询用户
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("user_account", userAccount));
+        return user.getId();
+    }
+
 }
 
 

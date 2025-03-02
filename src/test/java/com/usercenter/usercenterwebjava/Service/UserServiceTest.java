@@ -2,9 +2,11 @@ package com.usercenter.usercenterwebjava.Service;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
+import com.usercenter.usercenterwebjava.Mapper.UserMapper;
 import com.usercenter.usercenterwebjava.Model.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.DigestUtils;
 
@@ -22,6 +24,8 @@ class UserServiceTest {
 
     @Resource
     private UserService userService;
+    @Autowired
+    private UserMapper userMapper;
 
 
     @Test
@@ -50,49 +54,44 @@ class UserServiceTest {
     @Test
     public void userRegister() {
         // 测试用户名为空
-        String userAccount = "";
+        String userAccount = "myxzadmin";
         String userPassword = "";
         String checkPassword = "123456";
         long result = userService.userRegister(userAccount, userPassword, checkPassword);
         Assertions.assertEquals(-1, result);
 
         // 测试用户名长度不足
-//        userAccount = "my";
-//        result = userService.userRegister(userAccount, userPassword, checkPassword);
-//        Assertions.assertEquals(-1, result);
+        userAccount = "my";
+        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertEquals(-1, result);
 
         // 测试密码长度不足
-//        userPassword = "1234";
-//        checkPassword = "1234";
-//        result = userService.userRegister(userAccount, userPassword, checkPassword);
-//        Assertions.assertEquals(-1, result);
+        userPassword = "1234";
+        checkPassword = "1234";
+        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertEquals(-1, result);
 
         // 测试密码不匹配
-//        userAccount = "myxz";
-//        userPassword = "12345678";
-//        checkPassword = "87654321";
-//        result = userService.userRegister(userAccount, userPassword, checkPassword);
-//        Assertions.assertEquals(-1, result);
+        userPassword = "12345678";
+        checkPassword = "87654321";
+        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertEquals(-1, result);
 
         // 测试用户名包含特殊字符
-//        userAccount = "my xz";
-//        userPassword = "12345678";
-//        checkPassword = "12345678";
-//        result = userService.userRegister(userAccount, userPassword, checkPassword);
-//        Assertions.assertEquals(-1, result);
+        userAccount = "my +xz";
+        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertEquals(-1, result);
 
         // 测试用户名重复
-//        userAccount = "existingUser";
-//        // 预先插入一个用户
-//        User existingUser = new User("existingUser", "password", "email");
-//        userMapper.insert(existingUser);
-//        result = userService.userRegister(userAccount, userPassword, checkPassword);
-//        Assertions.assertEquals(-1, result);
+        userAccount = "myxzadmin";
+        // 预先插入一个用户
+        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        Assertions.assertEquals(-1, result);
 
         // 测试成功注册
-        userAccount = "myxzadmin";
-        userPassword = "123456";
-        checkPassword = "123456";
+        userAccount = "myxzadmintest";
+        userPassword = "12345678";
+        checkPassword = "12345678";
         result = userService.userRegister(userAccount, userPassword, checkPassword);
         Assertions.assertEquals(-1, result);
     }
