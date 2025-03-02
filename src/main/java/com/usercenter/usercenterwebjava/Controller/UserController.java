@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 用户接口
@@ -24,6 +25,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     *
+     * 注册
+     *
+     */
     @PostMapping("/register")
     public Long userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null){
@@ -38,6 +44,12 @@ public class UserController {
         return userService.userRegister(userAccount, userPassword, checkPassword);
     }
 
+
+    /**
+     *
+     * 登录
+     *
+     */
     @PostMapping("/login")
     public User userLogin(@RequestBody UserLoginRequest userLoginRequest,HttpServletRequest request) {
         if (userLoginRequest == null){
@@ -49,6 +61,31 @@ public class UserController {
             return  null;
         }
         return userService.userLogin(userAccount, userPassword, request);
+    }
+
+    /**
+     * 查询用户
+     *
+     * @param username 昵称
+     * @param userAccount 账户
+     * @return 用户信息列表
+     */
+    @PostMapping("/search")
+    public List<User> searchUsers(@RequestParam(required = false) String username, @RequestParam(required = false) String userAccount) {
+        return userService.searchUsers(username, userAccount);
+    }
+
+    /**
+     *
+     * 删除用户
+     *
+     */
+    @PostMapping("/delete")
+    public boolean deleteUser(@RequestBody long id){
+        if (id <= 0){
+            return false;
+        }
+        return userService.removeById(id);
     }
 
 }

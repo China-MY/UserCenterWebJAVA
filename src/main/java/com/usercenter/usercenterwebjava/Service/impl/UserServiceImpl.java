@@ -6,10 +6,13 @@ import com.usercenter.usercenterwebjava.Service.UserService;
 import com.usercenter.usercenterwebjava.Mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,8 +38,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     /**
      * 用户的登录状态
      */
-    private static final  String USER_LOGIN_STATE = "user_login_state";
+    public static final  String USER_LOGIN_STATE = "user_login_state";
 
+    /**
+     * 数据脱敏
+     * @param user 数据脱毛
+     * @return 返回脱敏数据
+     */
+    @NotNull
+    public static User safeUser(User user) {
+        User safeUser = new User();
+        safeUser.setId(user.getId());
+        safeUser.setUsername(user.getUsername());
+        safeUser.setUserAccount(user.getUserAccount());
+        safeUser.setAvatarUrl(user.getAvatarUrl());
+        safeUser.setGender(user.getGender());
+        safeUser.setPhone(user.getPhone());
+        safeUser.setEmail(user.getEmail());
+        safeUser.setUserStatus(user.getUserStatus());
+        safeUser.setCreateTime(user.getCreateTime());
+        safeUser.setUpdateTime(user.getUpdateTime());
+        safeUser.setUserRole(user.getUserRole());
+        return safeUser;
+    }
 
     /**
      *
@@ -133,23 +157,81 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return null;
         }
         //  用户脱敏
-        User safeUser = new User();
-        safeUser.setId(user.getId());
-        safeUser.setUsername(user.getUsername());
-        safeUser.setUserAccount(user.getUserAccount());
-        safeUser.setAvatarUrl(user.getAvatarUrl());
-        safeUser.setGender(user.getGender());
-        safeUser.setPhone(user.getPhone());
-        safeUser.setEmail(user.getEmail());
-        safeUser.setUserStatus(user.getUserStatus());
-        safeUser.setCreateTime(user.getCreateTime());
-        safeUser.setUpdateTime(user.getUpdateTime());
-        safeUser.setUserRole(user.getUserRole());
+        User safeUser = safeUser(user);
 
         //        记录用户的登录状态
         request.getSession().setAttribute(USER_LOGIN_STATE, safeUser);
         return safeUser;
     }
+
+
+    /**
+     * 查询用户
+     *
+     * @param username    昵称
+     * @param userAccount 账户
+     * @return 用户信息
+     */
+    @Override
+    public List<User> searchUsers(String username, String userAccount) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+
+        // 检查参数是否为空，并根据条件拼接查询
+        if (StringUtils.isNotBlank(username)) {
+            queryWrapper.like("username", username);
+        }
+        if (StringUtils.isNotBlank(userAccount)) {
+            queryWrapper.or().like("userAccount", userAccount);
+        }
+        // 查询用户信息
+        List<User> userList = userMapper.selectList(queryWrapper);
+        // 对用户数据进行脱敏处理
+        List<User> safeUserList = new ArrayList<>();
+        for (User user : userList) {
+            safeUserList.add(safeUser(user));
+        }
+        return safeUserList;
+    }
+
+
+    /**
+     *
+     * 删除用户
+     *
+     * @param id 用户id
+     * @return 成功或失败
+     */
+    @Override
+    public User deleteUser(long id) {
+        return null;
+    }
+
+    /**
+     *
+     * 增加用户
+     *
+     * @param user 用户类
+     * @return 返回成功或失败
+     */
+
+    @Override
+    public User addUser(User user) {
+        return null;
+    }
+
+    /**
+     *
+     * 更新用户
+     *
+     * @param user 用户类
+     * @return 返回成功或失败
+     */
+    @Override
+    public User updateUser(User user) {
+        return null;
+    }
+
+
 }
 
 
