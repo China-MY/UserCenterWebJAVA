@@ -1,9 +1,8 @@
 package com.usercenter.usercenterwebjava.Model.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
+import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
 
@@ -14,7 +13,7 @@ import lombok.Data;
  */
 @TableName(value ="user")
 @Data
-public class User {
+public class User implements Serializable {
     /**
      * 主键
      */
@@ -32,12 +31,22 @@ public class User {
     private String userAccount;
 
     /**
+     * 学号
+     */
+    private String stuId;
+
+    /**
+     * 班级
+     */
+    private String className;
+
+    /**
      * 头像
      */
     private String avatarUrl;
 
     /**
-     * 性别
+     * 性别 0-女 1-男
      */
     private Integer gender;
 
@@ -78,8 +87,10 @@ public class User {
     private Integer isDelete;
 
     /**
-     * 用户角色 0 - 普通用户 1 - 管理员
+     * 用户角色 0 - 普通用户 1 - 管理员 2-毕业校友 3-在校学生
      */
     private Integer userRole;
 
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
 }
