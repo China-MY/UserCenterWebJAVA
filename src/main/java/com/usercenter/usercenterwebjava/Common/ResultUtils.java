@@ -10,8 +10,13 @@ public class ResultUtils {
      *
 
      */
+
     public static <T> BaseResponse<T> success(T data) {
-        return new BaseResponse<>(0, data, "ok");
+        BaseResponse<T> response = new BaseResponse<>(0, data, "ok");
+        response.setCode(0);
+        response.setMessage("成功");
+        response.setData(data);
+        return response;
     }
 
     /**

@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.usercenter.usercenterwebjava.Contant.UserConstant.ADMIN_ROLE;
 import static com.usercenter.usercenterwebjava.Contant.UserConstant.USER_LOGIN_STATE;
 
 
@@ -179,6 +181,57 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     /**
+     * 是否为管理员
+     *
+     */
+    public boolean isAdmin(HttpServletRequest request) {
+        // 仅管理员可查询
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User user = (User) userObj;
+        return user != null && user.getUserRole() == ADMIN_ROLE;
+    }
+
+    /**
+     *更新用户信息
+     */
+    @Override
+    public User userUpdate(Long id, String username, String stuId, String className, String avatarUrl, Integer gender, String phone, String email, Integer userStatus, Integer isDelete, Integer userRole, HttpServletRequest request) throws BusinessException {
+        // 检查是否为管理员
+        if (!isAdmin(request)) {
+            throw new BusinessException(ErrorCode.NO_AUTH, "无权限修改用户信息");
+        }
+        // 验证用户ID是否存在
+        if (id == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户ID不能为空");
+        }
+        // 根据ID查询用户
+        User user = userMapper.selectById(id);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "用户不存在");
+        }
+        // 更新用户信息
+        user.setUsername(username);
+        user.setStuId(stuId);
+        user.setClassName(className);
+        user.setAvatarUrl(avatarUrl);
+        user.setGender(gender);
+        user.setPhone(phone);
+        user.setEmail(email);
+        user.setUserStatus(userStatus);
+        user.setIsDelete(isDelete);
+        user.setUserRole(userRole);
+        // 执行更新操作
+        boolean updateResult = this.updateById(user);
+        if (!updateResult) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "更新用户信息失败");
+        }
+        // 返回更新后的用户信息
+        return this.getSafetyUser(user);
+    }
+
+
+
+    /**
      *  用户注销
      * @param request 请求
      */
@@ -190,6 +243,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return 1;
     }
 
+    /**
+     *
+     * 用户列表
+     * @param user 用户信息
+     * @param request 请求
+     * @return 用户列表
+     *
+     */
+    @Override
+    public List<User> userList(User user, HttpServletRequest request) {
+        // 检查是否为管理员
+        if (!isAdmin(request)) {
+            throw new BusinessException(ErrorCode.NO_AUTH, "无权限查询用户信息");
+        }
+        return userMapper.selectList(new QueryWrapper<>(user));
+    }
 }
 
 

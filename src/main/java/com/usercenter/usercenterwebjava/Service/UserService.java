@@ -4,6 +4,7 @@ import com.usercenter.usercenterwebjava.Model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  *
@@ -51,7 +52,12 @@ public interface UserService extends IService<User> {
      */
     User userLogin(String userAccount, String userPassword, HttpServletRequest request) ;
 
-
+/**
+ * 用户更新
+ *
+ * @return 返回脱敏后的用户信息
+ */
+    Object userUpdate( Long id, String username, String stuId,String className,String avatarUrl,Integer gender,String phone,String email,Integer userStatus,Integer isDelete,Integer userRole,HttpServletRequest request);
     /**
      *
      * 用户退出
@@ -61,6 +67,14 @@ public interface UserService extends IService<User> {
      */
     int userLogout(HttpServletRequest request);
 
-
+    /**
+     *
+     * 用户列表
+     * @param user 用户信息
+     * @param request 请求
+     * @return 用户列表
+     *
+     */
+    List<User> userList(User user, HttpServletRequest request);
 }
 

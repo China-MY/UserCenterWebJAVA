@@ -7,15 +7,16 @@ import com.usercenter.usercenterwebjava.Common.ErrorCode;
 import com.usercenter.usercenterwebjava.Common.ResultUtils;
 import com.usercenter.usercenterwebjava.Exception.BusinessException;
 import com.usercenter.usercenterwebjava.Model.domain.User;
-import com.usercenter.usercenterwebjava.Model.request.DeleteUserRequest;
 import com.usercenter.usercenterwebjava.Model.request.UserLoginRequest;
 import com.usercenter.usercenterwebjava.Model.request.UserRegisterRequest;
+import com.usercenter.usercenterwebjava.Model.request.UserUpdateRequest;
 import com.usercenter.usercenterwebjava.Service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -139,6 +140,34 @@ public class UserController {
         return ResultUtils.success(list);
     }
 
+    @PostMapping("/update")
+    public BaseResponse<User> updateUser(@RequestBody UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
+        if (!isAdmin(request)) {
+            throw new BusinessException(ErrorCode.NO_AUTH, "缺少管理员权限");
+        }
+        // 校验
+        if (userUpdateRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Long id = userUpdateRequest.getId();
+        String username = userUpdateRequest.getUsername();
+        String stuId = userUpdateRequest.getStuId();
+        String className = userUpdateRequest.getClassName();
+        String avatarUrl = userUpdateRequest.getAvatarUrl();
+        Integer gender = userUpdateRequest.getGender();
+        String phone = userUpdateRequest.getPhone();
+        String email = userUpdateRequest.getEmail();
+        Integer userStatus = userUpdateRequest.getUserStatus();
+        Integer isDelete = userUpdateRequest.getIsDelete();
+        Integer userRole = userUpdateRequest.getUserRole();
+        User result = (User) userService.userUpdate(id, username, stuId, className, avatarUrl, gender, phone, email, userStatus, isDelete, userRole, request);
+        return ResultUtils.success(result);
+    }
+    @GetMapping("/list")
+    public BaseResponse<List<User>> listUser(User user, HttpServletRequest request){
+        return ResultUtils.success(userService.userList(user, request));
+    }
+
     /**
      * 删除用户
      * @param request 请求
@@ -156,4 +185,6 @@ public class UserController {
         boolean b = userService.removeById(id);
         return ResultUtils.success(b);
     }
+
+
 }
