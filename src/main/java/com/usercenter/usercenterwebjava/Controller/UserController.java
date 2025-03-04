@@ -63,7 +63,7 @@ public class UserController {
      * 登录
      */
     @PostMapping("/login")
-    public BaseResponse userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
@@ -98,7 +98,7 @@ public class UserController {
         // 仅管理员可查询
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User user = (User) userObj;
-        return user == null || user.getUserRole() != ADMIN_ROLE;
+        return user != null && user.getUserRole() == ADMIN_ROLE;
     }
 
     /**
@@ -127,7 +127,7 @@ public class UserController {
      */
     @GetMapping("/search")
     public BaseResponse<List<User>> searchUsers(String username, HttpServletRequest request) {
-        if (isAdmin(request)) {
+        if (!isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH, "缺少管理员权限");
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
