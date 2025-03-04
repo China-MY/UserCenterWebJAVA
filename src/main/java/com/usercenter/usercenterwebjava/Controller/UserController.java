@@ -29,7 +29,8 @@ import static com.usercenter.usercenterwebjava.Contant.UserConstant.USER_LOGIN_S
  */
 @RestController
 @RequestMapping("/user")
-
+//跨域
+@CrossOrigin(origins = {"http://localhost:3000"}, allowCredentials = "true")
 public class UserController {
 
     @Autowired
