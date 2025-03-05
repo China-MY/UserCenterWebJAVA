@@ -4,7 +4,6 @@ import com.usercenter.usercenterwebjava.Model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  *
@@ -67,14 +66,28 @@ public interface UserService extends IService<User> {
      */
     int userLogout(HttpServletRequest request);
 
+
+
     /**
      *
-     * 用户列表
-     * @param user 用户信息
+     * 用户id查询
+     * @param id 用户id
      * @param request 请求
-     * @return 用户列表
+     * @return 用户信息
      *
      */
-    List<User> userList(User user, HttpServletRequest request);
+    User userIdInfo( Long id,HttpServletRequest request);
+    /**
+     *
+     * 用户删除
+     * @param id 用户id
+     * @param request 请求
+     * @return 删除结果
+     *
+     */
+    int userDelete(Long id,  HttpServletRequest request);
+
+
+    void userPassword(String userPassword, String NewuserPassword, String checkNewPassword, HttpServletRequest request);
 }
 

@@ -8,15 +8,14 @@ import com.usercenter.usercenterwebjava.Common.ResultUtils;
 import com.usercenter.usercenterwebjava.Exception.BusinessException;
 import com.usercenter.usercenterwebjava.Model.domain.User;
 import com.usercenter.usercenterwebjava.Model.request.UserLoginRequest;
+import com.usercenter.usercenterwebjava.Model.request.UserPasswordRequest;
 import com.usercenter.usercenterwebjava.Model.request.UserRegisterRequest;
 import com.usercenter.usercenterwebjava.Model.request.UserUpdateRequest;
 import com.usercenter.usercenterwebjava.Service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -163,27 +162,42 @@ public class UserController {
         User result = (User) userService.userUpdate(id, username, stuId, className, avatarUrl, gender, phone, email, userStatus, isDelete, userRole, request);
         return ResultUtils.success(result);
     }
-    @GetMapping("/list")
-    public BaseResponse<List<User>> listUser(User user, HttpServletRequest request){
-        return ResultUtils.success(userService.userList(user, request));
+
+    /**
+     * 获取用户信息
+     *
+     * @param id 用户id
+     * @param request 请求
+     * @return 用户信息
+     */
+    @PostMapping("/idInfo")
+    public BaseResponse<User> userIdInfo(@RequestBody long id, HttpServletRequest request){
+        return ResultUtils.success(userService.userIdInfo(id, request));
     }
+
 
     /**
      * 删除用户
+     *
      * @param request 请求
      * @return 成功
      * @throws BusinessException 业务异常
      */
     @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
-        if (!isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH);
+    public BaseResponse<Integer> deleteUser(@RequestBody long id, HttpServletRequest request) {
+        return ResultUtils.success(userService.userDelete(id, request));
+    }
+
+    @PostMapping("/setpassword")
+    public BaseResponse<String> userPassword(@RequestBody UserPasswordRequest userPasswordRequest, HttpServletRequest request) {
+        if (request == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "未登录");
         }
-        if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        boolean b = userService.removeById(id);
-        return ResultUtils.success(b);
+        String userPassword = userPasswordRequest.getUserPassword();
+        String newUserPassword = userPasswordRequest.getNewuserPassword();
+        String checkNewPassword = userPasswordRequest.getCheckNewPassword();
+        userService.userPassword( userPassword, newUserPassword, checkNewPassword, request);
+        return ResultUtils.success("修改成功");
     }
 
 

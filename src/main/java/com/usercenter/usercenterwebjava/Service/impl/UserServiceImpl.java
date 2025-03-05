@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +54,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         User safetyUser = new User();
         safetyUser.setId(originUser.getId());
+        safetyUser.setClassName(originUser.getClassName());
         safetyUser.setUsername(originUser.getUsername());
         safetyUser.setUserAccount(originUser.getUserAccount());
         safetyUser.setAvatarUrl(originUser.getAvatarUrl());
@@ -185,10 +186,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      *
      */
     public boolean isAdmin(HttpServletRequest request) {
-        // 仅管理员可查询
+        // 系统管理员可查询
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User user = (User) userObj;
-        return user != null && user.getUserRole() == ADMIN_ROLE;
+        return user != null && user.getUserRole() == ADMIN_ROLE&& user.getId() == 1;
     }
 
     /**
@@ -243,21 +244,86 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return 1;
     }
 
+
     /**
      *
-     * 用户列表
-     * @param user 用户信息
+     * 获取用户详细信息
+     * @param id 用户ID
      * @param request 请求
-     * @return 用户列表
+     * @return 用户ID信息
      *
      */
     @Override
-    public List<User> userList(User user, HttpServletRequest request) {
-        // 检查是否为管理员
+    public User userIdInfo(Long id, HttpServletRequest request) {
         if (!isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH, "无权限查询用户信息");
+            throw new BusinessException(ErrorCode.NO_AUTH, "缺少管理员权限");
         }
-        return userMapper.selectList(new QueryWrapper<>(user));
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 获取用户信息
+        User user = userMapper.selectById(id);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "用户不存在");
+        }
+        // 返回用户信息
+        return getSafetyUser(user);
+    }
+
+    /**
+     *
+     * 删除用户
+     * @param id 用户ID
+     * @param request 请求
+     * @return 删除结果
+     *
+     */
+    @Override
+    public int userDelete(Long id, HttpServletRequest request) {
+        if (!isAdmin(request)) {
+            throw new BusinessException(ErrorCode.NO_AUTH, "缺少管理员权限");
+        }
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 新增验证逻辑：检查 id 是否等于 1 且 userRole 是否等于 1
+        User user = userMapper.selectById(id); // 获取用户信息
+        if (id.equals(1L) && user.getUserRole() == 1) {
+            throw new BusinessException(ErrorCode.NO_DELETE_SYSTEM_ADMIN, "系统管理员无法删除");
+        }
+       return userMapper.deleteById(id);
+    }
+
+    /**
+     *
+     * 修改用户密码
+     * @param request 请求
+     *
+     */
+    @Override
+    public void userPassword( String userPassword, String NewuserPassword, String checkNewPassword,HttpServletRequest request) {
+        if (request == null) {
+            throw new BusinessException(ErrorCode.NO_AUTH, "未登录");
+        }
+        // 1. 校验
+        if (StringUtils.isAnyBlank(userPassword,NewuserPassword,checkNewPassword )) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
+        if (!NewuserPassword.equals(checkNewPassword)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次密码不一致");
+        }
+        User oldUser = userMapper.selectById((Serializable) request.getSession().getAttribute("user"));
+        if (oldUser == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "用户不存在");
+        }
+        // 2. 加密旧密码
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+//         加密新密码
+        String encryptNewPassword = DigestUtils.md5DigestAsHex((SALT + NewuserPassword).getBytes());
+        if (!encryptPassword.equals(oldUser.getUserPassword())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "旧密码错误");
+        }
+        oldUser.setUserPassword(encryptNewPassword);
     }
 }
 
