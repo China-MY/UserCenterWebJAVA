@@ -87,7 +87,7 @@ public interface UserService extends IService<User> {
      */
     int userDelete(Long id,  HttpServletRequest request);
 
-
-    void userPassword(String userPassword, String NewuserPassword, String checkNewPassword, HttpServletRequest request);
+    User userIdInfoPassword( Long id,HttpServletRequest request);
+    User userPassword(Long id, String userPassword, String userNewPassword, String checkNewPassword,HttpServletRequest request);
 }
 

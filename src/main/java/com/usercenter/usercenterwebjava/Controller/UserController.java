@@ -175,6 +175,18 @@ public class UserController {
         return ResultUtils.success(userService.userIdInfo(id, request));
     }
 
+    /**
+     * 获取用户信息
+     *
+     * @param id 用户id
+     * @param request 请求
+     * @return 用户信息
+     */
+    @PostMapping("/setidpasswordInfo")
+    public BaseResponse<User> userIdInfoPassword(@RequestBody long id, HttpServletRequest request){
+        return ResultUtils.success(userService.userIdInfoPassword(id, request));
+    }
+
 
     /**
      * 删除用户
@@ -189,16 +201,21 @@ public class UserController {
     }
 
     @PostMapping("/setpassword")
-    public BaseResponse<String> userPassword(@RequestBody UserPasswordRequest userPasswordRequest, HttpServletRequest request) {
+    public BaseResponse<User> userPassword(@RequestBody UserPasswordRequest userPasswordRequest, HttpServletRequest request) {
         if (request == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "未登录");
         }
+        // 校验
+        System.out.println(userPasswordRequest);
+        if (userPasswordRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"参数为空");
+        }
+        System.out.println(userPasswordRequest);
+        Long id = userPasswordRequest.getId();
         String userPassword = userPasswordRequest.getUserPassword();
-        String newUserPassword = userPasswordRequest.getNewuserPassword();
+        String userNewPassword = userPasswordRequest.getUserNewPassword();
         String checkNewPassword = userPasswordRequest.getCheckNewPassword();
-        userService.userPassword( userPassword, newUserPassword, checkNewPassword, request);
-        return ResultUtils.success("修改成功");
+        User result = userService.userPassword(id, userPassword, userNewPassword,checkNewPassword, request);
+        return ResultUtils.success(result);
     }
-
-
 }

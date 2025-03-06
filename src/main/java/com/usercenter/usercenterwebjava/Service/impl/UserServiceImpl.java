@@ -270,6 +270,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return getSafetyUser(user);
     }
 
+
     /**
      *
      * 删除用户
@@ -301,30 +302,71 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      *
      */
     @Override
-    public void userPassword( String userPassword, String NewuserPassword, String checkNewPassword,HttpServletRequest request) {
+    public User userPassword(Long id, String userPassword, String userNewPassword, String checkNewPassword,HttpServletRequest request) throws BusinessException {
         if (request == null) {
             throw new BusinessException(ErrorCode.NO_AUTH, "未登录");
         }
-        // 1. 校验
-        if (StringUtils.isAnyBlank(userPassword,NewuserPassword,checkNewPassword )) {
+        // 验证用户ID是否存在
+        if (id == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户ID不能为空");
+        }
+        if (StringUtils.isAnyBlank(userPassword,userNewPassword,checkNewPassword )) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
-        if (!NewuserPassword.equals(checkNewPassword)) {
+        if (!userNewPassword.equals(checkNewPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次密码不一致");
-        }
-        User oldUser = userMapper.selectById((Serializable) request.getSession().getAttribute("user"));
-        if (oldUser == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND, "用户不存在");
         }
         // 2. 加密旧密码
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
 //         加密新密码
-        String encryptNewPassword = DigestUtils.md5DigestAsHex((SALT + NewuserPassword).getBytes());
-        if (!encryptPassword.equals(oldUser.getUserPassword())) {
+        String encryptNewPassword = DigestUtils.md5DigestAsHex((SALT + userNewPassword).getBytes());
+        // 根据ID查询用户
+        User user = userMapper.selectById(id);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "用户不存在");
+        }
+        if (!encryptPassword.equals(user.getUserPassword())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "旧密码错误");
         }
-        oldUser.setUserPassword(encryptNewPassword);
+        if (encryptNewPassword.equals(user.getUserPassword())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "新密码不能与旧密码相同");
+        }
+        // 更新用户信息
+        user.setUserPassword(encryptNewPassword);
+        // 执行更新操作
+        boolean userPasswordResult = this.updateById(user);
+        if (!userPasswordResult) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改密码失败");
+        }
+        // 返回更新后的用户信息
+        return this.getSafetyUser(user);
     }
+
+    /**
+     *
+     * 获取用户详细信息
+     * @param id 用户ID
+     * @param request 请求
+     * @return 用户ID信息
+     *
+     */
+    @Override
+    public User userIdInfoPassword(Long id, HttpServletRequest request) {
+        if (request == null) {
+            throw new BusinessException(ErrorCode.NO_AUTH, "未登录");
+        }
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 获取用户信息
+        User user = userMapper.selectById(id);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "用户不存在");
+        }
+        // 返回用户信息
+        return getSafetyUser(user);
+    }
+
 }
 
 
