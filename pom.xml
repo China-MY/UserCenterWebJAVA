@@ -104,11 +104,9 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.usercenter.usercenterwebjava.UserCenterWebJavaApplication</mainClass>
-                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>repackage</id>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
@@ -117,5 +115,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
